@@ -3,6 +3,7 @@
 >     with open("/tmp/access.log", "a+") as f:
 >         f.write("records\n")
 >         f.write(str(vars(current_user)["email"] if "email" in vars(current_user) else "anonymous") + "\n")
->         f.write(str(vars(record)) + "\n")
+>         f.write(str(repr(record)) + "\n")
 404d408
 <         from flask_login import current_user
+
