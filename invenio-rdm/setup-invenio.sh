@@ -7,7 +7,7 @@ function fail {
 
 
 echo "Install invenio-cli"
-pip3 install invenio-cli || fail "Could not install invenio-cli"
+pip3 install invenio-cli==0.12.0 || fail "Could not install invenio-cli"
 export PATH=$PATH:~/.local/bin
 
 echo "Init invenio"
