@@ -30,6 +30,11 @@ echo "Fix dependency versions"
 pip3 uninstall -y Werkzeug
 pip3 install Werkzeug==0.16.1 jsonresolver==0.2.1
 
+#sed -i '/^\[packages\]/a invenio-files-rest = {git = "https://github.com/roland-wallner/invenio-files-rest", ref="41d4c14c20c0f54e4758260efea79d17e444b55d"}' Pipfile
+sed -i '/^\[packages\]/a invenio-files-rest = {editable = true,git = "https://github.com/roland-wallner/invenio-files-rest",ref = "v1.1.1"}' Pipfile
+
+cat ../setup/docker/extra-dockerfile-lines.txt >> Dockerfile
+
 echo "Invenio start"
 invenio-cli containerize || fail "Could not generate containers"
 echo "Adding demo data"
