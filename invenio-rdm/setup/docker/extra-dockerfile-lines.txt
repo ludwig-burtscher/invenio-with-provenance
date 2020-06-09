@@ -4,8 +4,8 @@ RUN sed -i '307i\ \ \ \ with open("/tmp/access.log", "a+") as f:' /opt/invenio/s
 RUN sed -i '308i\ \ \ \ \ \ \ \ f.write("test\\n")' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
 # RUN sed -i '308i\ \ \ \ \ \ \ \ from flask_login import current_user' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
 # RUN sed -i '310i\ \ \ \ \ \ \ \ f.write(str(current_user.is_authenticated))' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
-# RUN sed -i '309i\ \ \ \ \ \ \ \ f.write(str(vars(current_user)))' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
-RUN sed -i '309i\ \ \ \ \ \ \ \ f.write(str(vars(current_user)["email"]) + "\\n")' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
+#RUN sed -i '309i\ \ \ \ \ \ \ \ f.write(str(vars(current_user)))' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
+RUN sed -i '309i\ \ \ \ \ \ \ \ f.write(str(vars(current_user)["email"] if "email" in vars(current_user) else "anonymous") + "\\n")' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
 #RUN sed -i '311i\ \ \ \ \ \ \ \ f.write(str(vars(permission)))' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
 RUN sed -i '310i\ \ \ \ \ \ \ \ f.write(str(vars(permission)["action"]) + "\\n")' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
 RUN sed -i '311i\ \ \ \ \ \ \ \ f.write(str(vars(permission)["over"]["record"]["recid"]) + "\\n")' /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py
