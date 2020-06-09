@@ -1,9 +1,8 @@
-400a401,406
+400a401,405
 >     from flask_login import current_user
 >     with open("/tmp/access.log", "a+") as f:
 >         f.write("records\n")
 >         f.write(str(vars(current_user)["email"] if "email" in vars(current_user) else "anonymous") + "\n")
->         f.write(str(vars(permission)["action"]) + "\n")
->         f.write(str(vars(permission)["over"]["record"]["recid"]) + "\n")
-404d409
+>         f.write(str(vars(record)) + "\n")
+404d408
 <         from flask_login import current_user
