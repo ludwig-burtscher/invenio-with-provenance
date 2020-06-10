@@ -20,6 +20,14 @@ select directory in */; do break; done
 echo "Copy certificate"
 cp cert/* $directory/docker/nginx/
 
+echo "Asking for PROVSTORE credentials"
+read -p "PROVSTORE Username: " provstore_username
+read -p "PROVSTORE APIKEY: " provstore_apikey
+cat <<EOF > $directory/.env
+PROVSTORE_USERNAME="$provstore_username"
+PROVSTORE_APIKEY="$provstore_apikey"
+EOF
+
 echo "Modify docker setup files"
 chmod +x ./setup/docker/modify-docker-compose.py
 python3 setup/docker/modify-docker-compose.py $directory || fail "Could not modify docker-compose"

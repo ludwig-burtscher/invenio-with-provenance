@@ -27,5 +27,10 @@ with open("setup/docker/allowed_hosts.txt") as file:
 hostline = "INVENIO_APP_ALLOWED_HOSTS=" + "['" + "','".join(hosts) + "']"
 environment.append(hostline)
 
+# add PROVSTORE env variables from .env file
+environment.append("PROVSTORE_USERNAME=${PROVSTORE_USERNAME}")
+environment.append("PROVSTORE_APIKEY=${PROVSTORE_APIKEY}")
+
+
 with open(docker_services_file, "w") as file:
     yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
