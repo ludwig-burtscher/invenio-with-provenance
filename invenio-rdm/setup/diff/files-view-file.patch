@@ -1,4 +1,4 @@
 306a307,309
 >     import subprocess
 >     import json
->     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(current_user), json.dumps(permission)], shell=True)
+>     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user)), json.dumps(vars(permission))], shell=True)
