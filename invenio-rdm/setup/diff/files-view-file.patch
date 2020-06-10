@@ -1,0 +1,3 @@
+306a307,308
+>     import subprocess
+>     subprocess.Popen(["python3", "/provstore.py", json.dumps(current_user), json.dumps(permission)])
