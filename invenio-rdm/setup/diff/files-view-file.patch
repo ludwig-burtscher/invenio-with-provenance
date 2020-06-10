@@ -1,4 +1,9 @@
-306a307,309
+306a307,314
 >     import subprocess
 >     import json
->     subprocess.Popen(["python3", "/provstore.py", json.dumps(current_user), json.dumps(permission)])
+>     class SetEncoder(json.JSONEncoder):
+>         def default(self, obj):
+>             if isinstance(obj, set):
+>                 return list(obj)
+>             return json.JSONEncoder.default(self, obj)
+>     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(permission), cls=SetEncoder)], shell=True)

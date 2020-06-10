@@ -1,4 +1,4 @@
-401,404c401,407
+401,404c401,412
 <     # Note, cannot be done in one line due overloading of boolean
 <     # operations permission object.
 <     if not permission_factory(record=record).can():
@@ -9,5 +9,10 @@
 >     from flask_login import current_user
 >     import subprocess
 >     import json
->     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user)), json.dumps(vars(pm)), json.dumps(vars(record))])
+>     class SetEncoder(json.JSONEncoder):
+>         def default(self, obj):
+>             if isinstance(obj, set):
+>                 return list(obj)
+>             return json.JSONEncoder.default(self, obj)
+>     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(pm), cls=SetEncoder), json.dumps(vars(record), cls=SetEncoder)], shell=True)
 >     if not pm.can():
