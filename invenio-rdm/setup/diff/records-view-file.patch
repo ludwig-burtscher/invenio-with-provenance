@@ -5,7 +5,7 @@
 <         from flask_login import current_user
 ---
 >     pm = permission_factory(record=record)
->
+>     
 >     from flask_login import current_user
 >     with open("/tmp/access.log", "a+") as f:
 >         f.write("records\n")
