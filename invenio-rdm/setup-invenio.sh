@@ -43,6 +43,8 @@ sed -i '/^\[packages\]/a invenio-records-rest = {editable = true,git = "https://
 
 cat ../setup/docker/extra-dockerfile-lines.txt >> Dockerfile
 cp ../setup/diff/records-view-file.patch .
+cp ../setup/diff/files-view-file.patch .
+cp ../setup/provstore-push.py .
 
 echo "Invenio start"
 invenio-cli containerize || fail "Could not generate containers"
