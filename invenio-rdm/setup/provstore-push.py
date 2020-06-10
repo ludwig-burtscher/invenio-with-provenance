@@ -29,12 +29,12 @@ def push_json(prov_dict, username, apikey):
         exit(2)
 
 
-def build_prov_json(subject, predicate, object):
+def build_prov_json(session, permission, optional=None):
     #TODO implement
     #returns single dict representing the prov_json
-    print(subject)
-    print(predicate)
-    print(object)
+    print(session)
+    print(permission)
+    print(optional)
     return {}
 
 
@@ -43,14 +43,15 @@ def eprint(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        eprint("Three command line arguments are required")
+    arglen = len(sys.argv)
+    if arglen < 3 or arglen > 4:
+        eprint("Two or three command line arguments are required")
         exit(3)
 
     try:
-        subject = json.loads(sys.argv[1])
-        predicate = json.loads(sys.argv[2])
-        object = json.loads(sys.argv[3])
+        session = json.loads(sys.argv[1])
+        permission = json.loads(sys.argv[2])
+        optional = json.loads(sys.argv[3]) if arglen == 4 else None
     except:
         eprint("Command line arguments are not JSON")
         exit(3)
@@ -61,4 +62,4 @@ if __name__ == "__main__":
         eprint("No PROVSTORE credentials found in env variables")
         exit(1)
 
-    push_json(build_prov_json(subject, predicate, object), provstore_username, provstore_apikey)
+    push_json(build_prov_json(session, permission, optional), provstore_username, provstore_apikey)
