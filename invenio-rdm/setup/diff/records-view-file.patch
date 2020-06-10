@@ -14,5 +14,5 @@
 >             if isinstance(obj, set):
 >                 return list(obj)
 >             return json.JSONEncoder.default(self, obj)
->     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(pm), cls=SetEncoder), json.dumps(vars(record), cls=SetEncoder)], shell=True)
+>     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(pm), cls=SetEncoder), json.dumps(vars(record) if record is not None else None, cls=SetEncoder)], shell=True, stdout=open("/tmp/r-out.txt", "a+"), stderr=open("/tmp/r-err.txt", "a+"))
 >     if not pm.can():

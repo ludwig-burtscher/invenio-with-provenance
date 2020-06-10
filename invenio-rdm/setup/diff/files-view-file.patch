@@ -6,4 +6,4 @@
 >             if isinstance(obj, set):
 >                 return list(obj)
 >             return json.JSONEncoder.default(self, obj)
->     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(permission), cls=SetEncoder)], shell=True)
+>     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(permission), cls=SetEncoder)], shell=True, stdout=open("/tmp/f-out.txt", "a+"), stderr=open("/tmp/f-err.txt", "a+"))
