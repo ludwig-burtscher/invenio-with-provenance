@@ -1,9 +1,11 @@
-306a307,314
+306a307,316
 >     import subprocess
 >     import json
 >     class SetEncoder(json.JSONEncoder):
 >         def default(self, obj):
 >             if isinstance(obj, set):
 >                 return list(obj)
+>             if isinstance(obj, InstanceState):
+>                 return str(obj)
 >             return json.JSONEncoder.default(self, obj)
->     subprocess.Popen(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(permission), cls=SetEncoder)], shell=True, stdout=open("/tmp/f-out.txt", "a+"), stderr=open("/tmp/f-err.txt", "a+"))
+>     subprocess.Run(["python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(permission), cls=SetEncoder)], shell=True, stdout=open("/tmp/f-out.txt", "a+"), stderr=open("/tmp/f-err.txt", "a+"))
