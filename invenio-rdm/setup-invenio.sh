@@ -24,8 +24,8 @@ echo "Asking for PROVSTORE credentials"
 read -p "PROVSTORE Username: " provstore_username
 read -p "PROVSTORE APIKEY: " provstore_apikey
 cat <<EOF > $directory/.env
-PROVSTORE_USERNAME="$provstore_username"
-PROVSTORE_APIKEY="$provstore_apikey"
+PROVSTORE_USERNAME=$provstore_username
+PROVSTORE_APIKEY=$provstore_apikey
 EOF
 
 echo "Modify docker setup files"
