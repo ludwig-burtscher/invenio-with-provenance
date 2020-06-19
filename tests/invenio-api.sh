@@ -49,6 +49,10 @@ create_record_simple () {
     },
     "_owners": [1],
     "_created_by": 1,
+    "community": {
+      "primary": "Maincom",
+      "secondary": [ "Subcom One", "Subcom Two" ]
+    },
     "access_right": "open",
     "resource_type": {
         "type": "publication",
