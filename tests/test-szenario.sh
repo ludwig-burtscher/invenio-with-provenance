@@ -17,13 +17,14 @@ echo "Created test record with new key: $id"
 
 read -d '' update << EOF
 {
-  "community": {
-    "primary": "Maincom",
-    "secondary": ["Subcom One", "Subcom Two", "Test3"]
-  }
+  "op": "replace",
+  "path": "/identifiers/arXiv",
+  "value": "88888"
 }
 EOF
 update_record ${id} "$update"
+
+get_record ${id}
 
 querystr="Testdata"
 echo "Searching for '$querystr'"
