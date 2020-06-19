@@ -1,21 +1,29 @@
-401,404c401,415
-<     # Note, cannot be done in one line due overloading of boolean
-<     # operations permission object.
-<     if not permission_factory(record=record).can():
-<         from flask_login import current_user
+427,429c427,449
+<             if permission_factory:
+<                 verify_record_permission(permission_factory, record)
+<             return f(self, record=record, *args, **kwargs)
 ---
->     pm = permission_factory(record=record)
+>             import subprocess, json
+>             from flask_login import current_user
+>             class SetEncoder(json.JSONEncoder):
+>                 def default(self, obj):
+>                     if isinstance(obj, set):
+>                         return list(obj)
+>                     try:
+>                         return json.JSONEncoder.default(self, obj)
+>                     except:
+>                         return str(obj)
 > 
->     from flask_login import current_user
->     import subprocess
->     import json
->     class SetEncoder(json.JSONEncoder):
->         def default(self, obj):
->             if isinstance(obj, set):
->                 return list(obj)
+>             ret = None
 >             try:
->                 return json.JSONEncoder.default(self, obj)
->             except:
->                 return str(obj)
->     subprocess.run(["/opt/rh/rh-python36/root/usr/bin/python3", "/provstore-push.py", json.dumps(vars(current_user), cls=SetEncoder), json.dumps(vars(pm), cls=SetEncoder), json.dumps(vars(record) if record is not None else None, cls=SetEncoder)], stdout=open("/tmp/r-out.txt", "a+"), stderr=open("/tmp/r-err.txt", "a+"))
->     if not pm.can():
+>                 if permission_factory:
+>                     verify_record_permission(permission_factory, record)
+>                 ret = f(self, record=record, *args, **kwargs)
+>             finally:
+>                 subprocess.run(["/opt/rh/rh-python36/root/usr/bin/python3", "/provstore-push.py",
+>                                 json.dumps(vars(current_user), cls=SetEncoder), factory_name, json.dumps(vars(ret) if ret is not None else None, cls=SetEncoder),
+>                                 json.dumps((vars(record)["model"].json if "model" in vars(record) else vars(
+>                                     record)) if record is not None else None, cls=SetEncoder), json.dumps(args, cls=SetEncoder), json.dumps(kwargs, cls=SetEncoder)],
+>                                stdout=open("/tmp/r-out.txt", "a+"), stderr=open("/tmp/r-err.txt", "a+"))
+>             return ret
+
