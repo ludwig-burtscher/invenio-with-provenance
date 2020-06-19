@@ -32,10 +32,38 @@ def push_json(prov_dict, username, apikey):
 def build_prov_json(session, permission, optional=None):
     #TODO implement
     #returns single dict representing the prov_json
+    
+    user = parse_user_from_session(session)
+    action = parse_action_from_permission(permission)
+    
+
+    print("-----START-----")
+    print("------Session:")
     print(session)
+    print("-----Permission:")
     print(permission)
+    print("-----Optional:")
     print(optional)
+    
+    print("User: {}".format(user))
+    print("Action: {}".format(action))
+    print("-----END-----")
+    
     return {}
+    
+    
+def parse_user_from_session(session):
+    anonymous_user = "anonymous"
+    if not session:
+        return anonymous_user
+    return session.get("email", anonymous_user)
+    
+    
+def parse_action_from_permission(permission):
+    no_action = "noop"
+    if not permission:
+        return no_action
+    return permission.get("action", no_action)
 
 
 def eprint(*args, **kwargs):
