@@ -41,6 +41,7 @@ create_record () {
 
 create_record_simple () {
    title="$1"
+   doi="$2"
    read -d '' txt << EOF
 {
   "_access": {
@@ -59,7 +60,7 @@ create_record_simple () {
         "subtype": "publication-article"
     },
     "identifiers": {
-        "DOI": "10.9999/rdm.9999999",
+        "DOI": "${doi}",
         "arXiv": "9999.99999"
     },
     "creators": [

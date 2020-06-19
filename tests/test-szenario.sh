@@ -12,7 +12,7 @@ set_session $(signup "test${RANDOM}@test.it" "passdfsdfgsdfg")
 # to logout use:
 # set_session ""
 
-id=$(create_record_simple "Testdata")
+id=$(create_record_simple "Testdata" "10.9999/rdm.9999999")
 echo "Created test record with new key: $id"
 
 querystr="Testdata"
