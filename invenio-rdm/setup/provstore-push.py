@@ -39,7 +39,7 @@ def build_prov_json(session, permission, optional=None):
 
 
 def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+    print(*args, file=open("/tmp/error.txt", "a+"), **kwargs)
 
 
 if __name__ == "__main__":
@@ -47,6 +47,9 @@ if __name__ == "__main__":
     if arglen < 3 or arglen > 4:
         eprint("Two or three command line arguments are required")
         exit(3)
+
+    with open("/tmp/test.txt", "a+") as f:
+        f.write(str(sys.argv) + "\n")
 
     try:
         session = json.loads(sys.argv[1])
