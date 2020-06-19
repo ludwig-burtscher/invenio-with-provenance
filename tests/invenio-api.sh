@@ -52,7 +52,7 @@ create_record_simple () {
     "_created_by": 1,
     "community": {
       "primary": "Maincom",
-      "secondary": [ "Subcom One", "Subcom Two" ]
+      "secondary": ["Subcom One","Subcom Two"]
     },
     "access_right": "open",
     "resource_type": {
@@ -106,6 +106,16 @@ create_record_simple () {
 }
 EOF
 create_record "$txt"
+}
+
+update_record () {
+  record_id="$1"
+  update="$2"
+
+  curl ${CURL_OPTS} -s -b session=${SESSION} --header "Content-Type: application/json-patch+json" \
+    --request PATCH \
+    --data "$update" \
+    "${HOST}/api/records/${record_id}"
 }
 
 search_records () {

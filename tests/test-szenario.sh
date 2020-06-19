@@ -12,8 +12,18 @@ set_session $(signup "test${RANDOM}@test.it" "passdfsdfgsdfg")
 # to logout use:
 # set_session ""
 
-id=$(create_record_simple "Testdata" "10.9999/rdm.9999999")
+id=$(create_record_simple "Testdata" "10.9999/rdm.9999998")
 echo "Created test record with new key: $id"
+
+read -d '' update << EOF
+{
+  "community": {
+    "primary": "Maincom",
+    "secondary": ["Subcom One", "Subcom Two", "Test3"]
+  }
+}
+EOF
+update_record ${id} "$update"
 
 querystr="Testdata"
 echo "Searching for '$querystr'"
