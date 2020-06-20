@@ -118,6 +118,13 @@ update_record () {
     "${HOST}/api/records/${record_id}"
 }
 
+get_record () {
+  record_id="$1"
+
+  curl ${CURL_OPTS} -s -b session=${SESSION} \
+    "${HOST}/api/records/${record_id}"
+}
+
 search_records () {
   querystr="$1"
 

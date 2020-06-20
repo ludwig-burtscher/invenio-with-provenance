@@ -8,13 +8,15 @@
 # 0: All good - provstore document created successfully
 # 1: No provstore credentials
 # 2: Provstore document upload failed
-# 3: No JSON command line arguments
+# 3: Invalid command line arguments
 
 import requests
 import uuid
 import json
 import os
 import sys
+import time
+from prov.model import ProvDocument
 
 
 def push_json(prov_dict, username, apikey):
@@ -29,42 +31,99 @@ def push_json(prov_dict, username, apikey):
         exit(2)
 
 
-def build_prov_json(session, permission, optional=None):
-    #TODO implement
+def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwargs):
     #returns single dict representing the prov_json
     
-    user = parse_user_from_session(session)
-    action = parse_action_from_permission(permission)
+    user = parse_user(o_user)
+    action = parse_action(s_action)
     
+    d = get_base_prov_document()
+    
+    
+    if action == "read":
+        record_id = parse_record_id_before(o_record_before)
+        u = d.agent("user:{}".format(user))
+        e = d.entity("record:{}".format(get_prov_record_id(record_id, parse_revision_after(o_record_after))))
+        a = d.activity("action:{}".format(action))
+        d.wasAssociatedWith(a, u)
+        d.used(a, e)
+    elif action == "create":
+        record_id = parse_record_id_after(o_record_after)
+        u = d.agent("user:{}".format(user))
+        e = d.entity("record:{}".format(get_prov_record_id(record_id, "0")))
+        a = d.activity("action:{}".format(action))
+        d.wasAssociatedWith(a, u)
+        d.wasGeneratedBy(e, a)
+    elif action == "update":
+        old_record_id = parse_record_id_before(o_record_before)
+        new_record_id = parse_record_id_after(o_record_after)
+        new_revision = parse_revision_after(o_record_after)
+        old_revision = str(int(new_revision) - 1)
+        u = d.agent("user:{}".format(user))
+        old_e = d.entity("record:{}".format(get_prov_record_id(old_record_id, old_revision)))
+        new_e = d.entity("record:{}".format(get_prov_record_id(new_record_id, new_revision)))
+        a = d.activity("action:{}".format(action))
+        d.wasAssociatedWith(a, u)
+        d.wasDerivedFrom(new_e, old_e)
+    elif action == "list":
+        u = d.agent("user:{}".format(user))
+        a = d.activity("action:{}".format(action))
+        hits = json.loads(o_record_after["response"][0].replace("'", "").replace("\\", "")[1:])["hits"]["hits"]
+        for hit in hits:
+            recid = hit["id"]
+            e = d.entity("record:{}".format(get_prov_record_id(hit["id"], hit["revision"])))
+            d.used(a,e)
+        d.wasAssociatedWith(a, u)
+        
+    
+    return d.serialize(indent=2)
 
-    print("-----START-----")
-    print("------Session:")
-    print(session)
-    print("-----Permission:")
-    print(permission)
-    print("-----Optional:")
-    print(optional)
     
-    print("User: {}".format(user))
-    print("Action: {}".format(action))
-    print("-----END-----")
-    
-    return {}
-    
-    
-def parse_user_from_session(session):
+def parse_user(o_user):
     anonymous_user = "anonymous"
-    if not session:
+    if not o_user:
         return anonymous_user
-    return session.get("email", anonymous_user)
-    
-    
-def parse_action_from_permission(permission):
+    return o_user.get("email", anonymous_user)
+     
+def parse_action(action):
     no_action = "noop"
-    if not permission:
+    if not action:
         return no_action
-    return permission.get("action", no_action)
-
+    return action[:-19] #trim _permission_factory
+    
+def parse_record_id_before(o_record_before):
+    no_record_id = "unidentified-record"
+    if not o_record_before:
+        return no_record_id
+    return o_record_before.get("recid", no_record_id)
+    
+def parse_record_id_after(o_record_after):
+    no_record_id = "unidentified-record"
+    if not o_record_after:
+        return no_record_id
+    return o_record_after["response"][0].split("recid")[1][3:].split("\",\"")[0]
+    
+def parse_revision_after(o_record_after):
+    # only takes first occurence of "revision" into account
+    no_revision = get_timestamp_now()
+    if not o_record_after:
+        return no_revision
+    return o_record_after["response"][0].split("revision")[1][2:].split(",")[0]
+    
+    
+def get_timestamp_now():
+    return str(int(time.time()))
+    
+def get_base_prov_document():
+    d = ProvDocument()
+    d.add_namespace("user", "http://example.org/users/")
+    d.add_namespace("record", " http://example.org/records/")
+    d.add_namespace("action", "http://example.org/actions/")
+    return d
+    
+def get_prov_record_id(record_id, revision):
+    return "{}_{}".format(record_id, revision)
+    
 
 def eprint(*args, **kwargs):
     print(*args, file=open("/tmp/error.txt", "a+"), **kwargs)
@@ -72,19 +131,19 @@ def eprint(*args, **kwargs):
 
 if __name__ == "__main__":
     arglen = len(sys.argv)
-    if arglen < 3 or arglen > 4:
-        eprint("Two or three command line arguments are required")
+    if arglen is not 7:
+        eprint("Exactly 7 command line arguments are required")
         exit(3)
 
-    with open("/tmp/test.txt", "a+") as f:
-        f.write(str(sys.argv) + "\n")
-
     try:
-        session = json.loads(sys.argv[1])
-        permission = json.loads(sys.argv[2])
-        optional = json.loads(sys.argv[3]) if arglen == 4 else None
+        o_user = json.loads(sys.argv[1])
+        s_action = sys.argv[2]
+        o_record_after = json.loads(sys.argv[3]) if sys.argv[3] != "null" else None
+        o_record_before = json.loads(sys.argv[4]) if sys.argv[4] != "null" else None
+        args = json.loads(sys.argv[5])
+        kwargs = json.loads(sys.argv[6])
     except:
-        eprint("Command line arguments are not JSON")
+        eprint("Command line arguments are not valid")
         exit(3)
 
     provstore_username = os.getenv("PROVSTORE_USERNAME")
@@ -93,4 +152,4 @@ if __name__ == "__main__":
         eprint("No PROVSTORE credentials found in env variables")
         exit(1)
 
-    push_json(build_prov_json(session, permission, optional), provstore_username, provstore_apikey)
+    push_json(build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwargs), provstore_username, provstore_apikey)
