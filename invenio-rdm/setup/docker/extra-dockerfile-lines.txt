@@ -14,4 +14,5 @@
 
 RUN patch /opt/invenio/src/src/invenio-records-rest/invenio_records_rest/views.py records-view-file.patch
 RUN patch /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py files-view-file.patch
+#RUN patch /opt/invenio/src/src/invenio-files-rest/invenio_files_rest/views.py files-view-file.patch
 COPY provstore-push.py /
