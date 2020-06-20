@@ -15,16 +15,21 @@ set_session $(signup "test${RANDOM}@test.it" "passdfsdfgsdfg")
 id=$(create_record_simple "Testdata" "10.9999/rdm.9999998")
 echo "Created test record with new key: $id"
 
+echo "Doing an update..."
 read -d '' update << EOF
-{
+[{
   "op": "replace",
   "path": "/identifiers/arXiv",
   "value": "88888"
-}
+}]
 EOF
 update_record ${id} "$update"
+echo
 
+
+echo "Getting record ${id}"
 get_record ${id}
+echo
 
 querystr="Testdata"
 echo "Searching for '$querystr'"

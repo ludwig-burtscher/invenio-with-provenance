@@ -112,7 +112,7 @@ update_record () {
   record_id="$1"
   update="$2"
 
-  curl ${CURL_OPTS} -s -b session=${SESSION} --header "Content-Type: application/json-patch+json" \
+  curl ${CURL_OPTS} -s -b session=${SESSION} --header "Content-Type: application/json" \
     --request PATCH \
     --data "$update" \
     "${HOST}/api/records/${record_id}"
