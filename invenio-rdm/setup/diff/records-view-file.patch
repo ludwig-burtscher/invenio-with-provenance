@@ -1,4 +1,15 @@
-427,429c427,449
+247a248,249
+>     from .utils import allow_all
+> 
+255c257
+<         update_permission_factory_imp
+---
+>         allow_all
+258c260
+<         delete_permission_factory_imp
+---
+>         allow_all
+427,429c429,451
 <             if permission_factory:
 <                 verify_record_permission(permission_factory, record)
 <             return f(self, record=record, *args, **kwargs)
@@ -26,4 +37,13 @@
 >                                     record)) if record is not None else None, cls=SetEncoder), json.dumps(args, cls=SetEncoder), json.dumps(kwargs, cls=SetEncoder)],
 >                                stdout=open("/tmp/r-out.txt", "a+"), stderr=open("/tmp/r-err.txt", "a+"))
 >             return ret
+811c833
+<     @require_content_types('application/json-patch+json')
+---
+>     @require_content_types('application/json-patch+json', 'application/json')
+836c858,859
+<         data = self.loaders[request.mimetype]()
+---
+>         data = request.get_json()
+>         # data = self.loaders[request.mimetype]()
 
