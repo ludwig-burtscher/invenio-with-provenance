@@ -33,55 +33,57 @@ def push_json(prov_dict, username, apikey):
         exit(2)
 
 
-def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwargs):
+def build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, kwargs):
     #returns single dict representing the prov_json
     
     user = parse_user(o_user)
-    action = parse_action(s_action)
-    action_id = str(uuid.uuid4())
+    activity = parse_activity(s_activity)
+    activity_id = str(uuid.uuid4())
     timestamp = datetime.datetime.now()
     
-    d = get_base_prov_document()   
+    if not activity:
+        return {}
     
-    if action == "read":
+    d = get_base_prov_document()
+    
+    u = d.agent("invenio:user_{}".format(user), {"invenio:email": user})
+    a = d.activity("invenio:activity_{}_{}".format(activity, activity_id), timestamp, None, {"invenio:activityType": activity})
+    
+    
+    if activity == "read":
         record_id = parse_record_id_before(o_record_before)
-        u = d.agent("user:{}".format(user))
-        e = d.entity("record:{}".format(get_prov_record_id(record_id, parse_revision_after(o_record_after))))
-        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+        revision = parse_revision_after(o_record_after)
+        e = d.entity("invenio:record_{}_{}".format(record_id, revision), {"invenio:recordId": record_id, "invenio:revision": revision})
         d.wasAssociatedWith(a, u)
         d.used(a, e)
-    elif action == "create":
+    elif activity == "create":
         record_id = parse_record_id_after(o_record_after)
-        u = d.agent("user:{}".format(user))
-        e = d.entity("record:{}".format(get_prov_record_id(record_id, "0")))
-        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+        revision = "0"
+        e = d.entity("invenio:record_{}_{}".format(record_id, revision), {"invenio:recordId": record_id, "invenio:revision": revision})
         d.wasAssociatedWith(a, u)
         d.wasGeneratedBy(e, a)
-    elif action == "update":
-        old_record_id = parse_record_id_before(o_record_before)
+    elif activity == "update":
         new_record_id = parse_record_id_after(o_record_after)
+        old_record_id = parse_record_id_before(o_record_before)
         new_revision = parse_revision_after(o_record_after)
         old_revision = str(int(new_revision) - 1)
-        u = d.agent("user:{}".format(user))
-        old_e = d.entity("record:{}".format(get_prov_record_id(old_record_id, old_revision)))
-        new_e = d.entity("record:{}".format(get_prov_record_id(new_record_id, new_revision)))
-        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+        new_e = d.entity("invenio:record_{}_{}".format(new_record_id, new_revision), {"invenio:recordId": new_record_id, "invenio:revision": new_revision})
+        old_e = d.entity("invenio:record_{}_{}".format(old_record_id, old_revision), {"invenio:recordId": old_record_id, "invenio:revision": old_revision})
         d.wasAssociatedWith(a, u)
+        d.used(a, old_e)
+        d.used(a, new_e)
         d.wasDerivedFrom(new_e, old_e)
-    elif action == "list":
-        u = d.agent("user:{}".format(user))
-        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+    elif activity == "list":
         hits = json.loads(o_record_after["response"][0].replace("'", "").replace("\\", "")[1:])["hits"]["hits"]
         for hit in hits:
-            recid = hit["id"]
-            e = d.entity("record:{}".format(get_prov_record_id(hit["id"], hit["revision"])))
-            d.used(a,e)
+            record_id = hit["id"]
+            revision = hit["revision"]
+            e = d.entity("invenio:record_{}_{}".format(record_id, revision), {"invenio:recordId": record_id, "invenio:revision": revision})
+            d.used(a, e)
         d.wasAssociatedWith(a, u)
-    elif action == "delete":
-        u = d.agent("user:{}".format(user))
-        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+    elif activity == "delete":
         record_id = kwargs["pid"].split("recid:")[1].split(" ")[0]
-        e = d.entity("record:{}".format(record_id))
+        e = d.entity("invenio:record_{}".format(record_id), {"invenio:recordId": record_id})
         d.wasAssociatedWith(a, u)
         d.used(a, e)
     else:
@@ -96,11 +98,11 @@ def parse_user(o_user):
         return anonymous_user
     return o_user.get("email", anonymous_user)
      
-def parse_action(action):
-    no_action = "noop"
-    if not action:
-        return no_action
-    return action[:-19] #trim _permission_factory
+def parse_activity(activity):
+    no_activity = "noop"
+    if not activity:
+        return no_activity
+    return activity[:-19] #trim _permission_factory
     
 def parse_record_id_before(o_record_before):
     no_record_id = "unidentified-record"
@@ -121,20 +123,14 @@ def parse_revision_after(o_record_after):
         return no_revision
     return o_record_after["response"][0].split("revision")[1][2:].split(",")[0]
     
-    
 def get_timestamp_now():
     return str(int(time.time()))
     
 def get_base_prov_document():
     d = ProvDocument()
-    d.add_namespace("user", "http://example.org/users/")
-    d.add_namespace("record", "http://example.org/records/")
-    d.add_namespace("action", "http://example.org/actions/")
+    d.add_namespace("invenio", "http://example.org/invenio/")
     return d
-    
-def get_prov_record_id(record_id, revision):
-    return "{}_{}".format(record_id, revision)
-    
+       
 
 def eprint(*args, **kwargs):
     print(*args, file=open("/tmp/error.txt", "a+"), **kwargs)
@@ -148,7 +144,7 @@ if __name__ == "__main__":
 
     try:
         o_user = json.loads(sys.argv[1])
-        s_action = sys.argv[2]
+        s_activity = sys.argv[2]
         o_record_after = json.loads(sys.argv[3]) if sys.argv[3] != "null" else None
         o_record_before = json.loads(sys.argv[4]) if sys.argv[4] != "null" else None
         args = json.loads(sys.argv[5])
@@ -163,4 +159,4 @@ if __name__ == "__main__":
         eprint("No PROVSTORE credentials found in env variables")
         exit(1)
 
-    push_json(build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwargs), provstore_username, provstore_apikey)
+    push_json(build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, kwargs), provstore_username, provstore_apikey)
