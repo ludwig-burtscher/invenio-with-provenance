@@ -125,6 +125,14 @@ get_record () {
     "${HOST}/api/records/${record_id}"
 }
 
+delete_record () {
+  record_id="$1"
+
+  curl ${CURL_OPTS} -s -b session=${SESSION} \
+    -X DELETE \
+    "${HOST}/api/records/${record_id}"
+}
+
 search_records () {
   querystr="$1"
 
