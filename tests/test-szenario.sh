@@ -6,40 +6,68 @@ check_deps
 set_invenio_host "https://10.0.0.160"
 set_curl_opts "--insecure"
 
-# use a user
-set_session $(signup "test${RANDOM}@test.it" "passdfsdfgsdfg")
+create_update_get_record () {
+  title="$1"
+  doi="$2"
 
-# to logout use:
-# set_session ""
+  id=$(create_record_simple ${title} ${doi})
+  echo "Created test record with new key: $id" >&2
 
-id=$(create_record_simple "Testdata" "10.9999/rdm.9999998")
-echo "Created test record with new key: $id"
-
-echo "Doing an update..."
-read -d '' update << EOF
+  echo "Doing an update..." >&2
+  read -d '' update << EOF
 [{
   "op": "replace",
   "path": "/identifiers/arXiv",
   "value": "88888"
 }]
 EOF
-update_record ${id} "$update"
-echo
+  update_record ${id} "$update" > /dev/null
+  echo >&2
 
 
-echo "Getting record ${id}"
-get_record ${id}
-echo
+  echo "Getting record ${id}" >&2
+  get_record ${id} > /dev/null
+  echo >&2
+
+  echo ${id}
+}
+
+# use a user
+echo "Using a user"
+set_session $(signup "test${RANDOM}@test.it" "passdfsdfgsdfg")
+
+# to logout use:
+# set_session ""
+
+create_update_get_record "Testdata" "10.9999/rdm.9999998"
+create_update_get_record "Testdata2" "10.9999/rdm.9999997"
+create_update_get_record "Testdata3" "10.9999/rdm.9999996"
+id1=$(create_update_get_record "Testdata4" "10.9999/rdm.9999995")
+id12=$(create_update_get_record "Testdata5" "10.9999/rdm.9999994")
 
 querystr="Testdata"
 echo "Searching for '$querystr'"
 # search_records "$querystr"
 
-testfilename="test_upload_file.txt"
-touch ${testfilename}
-echo -e "# This is Test content\n[Maybe]\nItsA = ini" > ${testfilename}
-upload_file_to_record ${id} ${testfilename}
+delete_record ${id1}
+get_record ${id12}
 
-echo "Reading file"
-read_file_for_record ${id} ${testfilename}
-echo
+# Anonymous user
+echo "Using the anonymous user"
+set_session ""
+create_update_get_record "Testdata" "10.9999/rdm.9999998"
+create_update_get_record "Testdata2" "10.9999/rdm.9999997"
+create_update_get_record "Testdata3" "10.9999/rdm.9999996"
+id1=$(create_update_get_record "Testdata4" "10.9999/rdm.9999995")
+id2=$(create_update_get_record "Testdata5" "10.9999/rdm.9999994")
+get_record ${id2}
+
+# Another User
+echo "Using another user"
+set_session $(signup "admin${RANDOM}@test.it" "passdfsdfgsdfg")
+id1=$(create_update_get_record "Testdata4" "10.9999/rdm.9999995")
+id2=$(create_update_get_record "Testdata5" "10.9999/rdm.9999994")
+delete_record ${id1}
+delete_record ${id2}
+
+get_record ${id12}
