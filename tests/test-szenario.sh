@@ -47,7 +47,7 @@ id12=$(create_update_get_record "Testdata5" "10.9999/rdm.9999994")
 
 querystr="Testdata"
 echo "Searching for '$querystr'"
-# search_records "$querystr"
+search_records "$querystr"
 
 delete_record ${id1}
 get_record ${id12}
