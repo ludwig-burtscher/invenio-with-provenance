@@ -16,6 +16,8 @@ import json
 import os
 import sys
 import time
+import uuid
+import datetime
 from prov.model import ProvDocument
 
 
@@ -36,6 +38,8 @@ def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwa
     
     user = parse_user(o_user)
     action = parse_action(s_action)
+    action_id = str(uuid.uuid4())
+    timestamp = datetime.datetime.now()
     
     d = get_base_prov_document()
     
@@ -44,14 +48,14 @@ def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwa
         record_id = parse_record_id_before(o_record_before)
         u = d.agent("user:{}".format(user))
         e = d.entity("record:{}".format(get_prov_record_id(record_id, parse_revision_after(o_record_after))))
-        a = d.activity("action:{}".format(action))
+        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
         d.wasAssociatedWith(a, u)
         d.used(a, e)
     elif action == "create":
         record_id = parse_record_id_after(o_record_after)
         u = d.agent("user:{}".format(user))
         e = d.entity("record:{}".format(get_prov_record_id(record_id, "0")))
-        a = d.activity("action:{}".format(action))
+        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
         d.wasAssociatedWith(a, u)
         d.wasGeneratedBy(e, a)
     elif action == "update":
@@ -62,12 +66,12 @@ def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwa
         u = d.agent("user:{}".format(user))
         old_e = d.entity("record:{}".format(get_prov_record_id(old_record_id, old_revision)))
         new_e = d.entity("record:{}".format(get_prov_record_id(new_record_id, new_revision)))
-        a = d.activity("action:{}".format(action))
+        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
         d.wasAssociatedWith(a, u)
         d.wasDerivedFrom(new_e, old_e)
     elif action == "list":
         u = d.agent("user:{}".format(user))
-        a = d.activity("action:{}".format(action))
+        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
         hits = json.loads(o_record_after["response"][0].replace("'", "").replace("\\", "")[1:])["hits"]["hits"]
         for hit in hits:
             recid = hit["id"]
