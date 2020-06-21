@@ -32,7 +32,7 @@
 >                 ret = f(self, record=record, *args, **kwargs)
 >             finally:
 >                 subprocess.run(["/opt/rh/rh-python36/root/usr/bin/python3", "/provstore-push.py",
->                                 json.dumps(vars(current_user) if hasattr(current_user, "__dict__") else str(current_user), cls=SetEncoder), factory_name, json.dumps((vars(ret) if hasattr(ret, "__dict__") else str(ret)) if ret is not None else None, cls=SetEncoder),
+>                                 str(current_user.email) if hasattr(current_user, "email") else "anonymous", factory_name, json.dumps((vars(ret) if hasattr(ret, "__dict__") else str(ret)) if ret is not None else None, cls=SetEncoder),
 >                                 json.dumps((vars(record)["model"].json if "model" in vars(record) else vars(
 >                                     record)) if record is not None else None, cls=SetEncoder), json.dumps(args, cls=SetEncoder), json.dumps(kwargs, cls=SetEncoder)],
 >                                stdout=open("/tmp/r-out.txt", "a+"), stderr=open("/tmp/r-err.txt", "a+"))
