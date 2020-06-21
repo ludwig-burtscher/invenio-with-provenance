@@ -41,8 +41,7 @@ def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwa
     action_id = str(uuid.uuid4())
     timestamp = datetime.datetime.now()
     
-    d = get_base_prov_document()
-    
+    d = get_base_prov_document()   
     
     if action == "read":
         record_id = parse_record_id_before(o_record_before)
@@ -78,7 +77,15 @@ def build_prov_json(o_user, s_action, o_record_before, o_record_after, args, kwa
             e = d.entity("record:{}".format(get_prov_record_id(hit["id"], hit["revision"])))
             d.used(a,e)
         d.wasAssociatedWith(a, u)
-        
+    elif action == "delete":
+        u = d.agent("user:{}".format(user))
+        a = d.activity("action:{}_{}".format(action, action_id), timestamp)
+        record_id = kwargs["pid"].split("recid:")[1].split(" ")[0]
+        e = d.entity("record:{}".format(record_id))
+        d.wasAssociatedWith(a, u)
+        d.used(a, e)
+    else:
+        return {}
     
     return d.serialize(indent=2)
 
@@ -121,7 +128,7 @@ def get_timestamp_now():
 def get_base_prov_document():
     d = ProvDocument()
     d.add_namespace("user", "http://example.org/users/")
-    d.add_namespace("record", " http://example.org/records/")
+    d.add_namespace("record", "http://example.org/records/")
     d.add_namespace("action", "http://example.org/actions/")
     return d
     
