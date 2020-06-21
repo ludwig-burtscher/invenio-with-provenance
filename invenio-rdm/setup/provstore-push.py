@@ -33,10 +33,9 @@ def push_json(prov_dict, username, apikey):
         exit(2)
 
 
-def build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, kwargs):
+def build_prov_json(s_user, s_activity, o_record_before, o_record_after, args, kwargs):
     #returns single dict representing the prov_json
     
-    user = parse_user(o_user)
     activity = parse_activity(s_activity)
     activity_id = str(uuid.uuid4())
     timestamp = datetime.datetime.now()
@@ -46,7 +45,7 @@ def build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, k
     
     d = get_base_prov_document()
     
-    u = d.agent("invenio:user_{}".format(user), {"invenio:email": user})
+    u = d.agent("invenio:user_{}".format(s_user), {"invenio:email": s_user})
     a = d.activity("invenio:activity_{}_{}".format(activity, activity_id), timestamp, None, {"invenio:activityType": activity})
     
     
@@ -91,12 +90,6 @@ def build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, k
     
     return d.serialize(indent=2)
 
-    
-def parse_user(o_user):
-    anonymous_user = "anonymous"
-    if not o_user:
-        return anonymous_user
-    return o_user.get("email", anonymous_user)
      
 def parse_activity(activity):
     no_activity = "noop"
@@ -143,7 +136,7 @@ if __name__ == "__main__":
         exit(3)
 
     try:
-        o_user = json.loads(sys.argv[1])
+        s_user = sys.argv[1]
         s_activity = sys.argv[2]
         o_record_after = json.loads(sys.argv[3]) if sys.argv[3] != "null" else None
         o_record_before = json.loads(sys.argv[4]) if sys.argv[4] != "null" else None
@@ -159,4 +152,4 @@ if __name__ == "__main__":
         eprint("No PROVSTORE credentials found in env variables")
         exit(1)
 
-    push_json(build_prov_json(o_user, s_activity, o_record_before, o_record_after, args, kwargs), provstore_username, provstore_apikey)
+    push_json(build_prov_json(s_user, s_activity, o_record_before, o_record_after, args, kwargs), provstore_username, provstore_apikey)
