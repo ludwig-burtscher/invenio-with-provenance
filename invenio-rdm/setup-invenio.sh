@@ -37,9 +37,7 @@ cd $directory
 echo "Fix dependency versions"
 pip3 uninstall -y Werkzeug
 pip3 install Werkzeug==0.16.1 jsonresolver==0.2.1
-
-sed -i '/^\[packages\]/a invenio-files-rest = {editable = true,git = "https://github.com/roland-wallner/invenio-files-rest",ref = "v1.1.1"}' Pipfile
-sed -i '/^\[packages\]/a invenio-records-rest = {editable = true,git = "https://github.com/roland-wallner/invenio-records-rest",ref = "v1.6.5"}' Pipfile
+sed -i '/^\[packages\]/a invenio-records-rest = {editable = true,git = "https://github.com/inveniosoftware/invenio-records-rest",ref = "v1.6.5"}' Pipfile
 
 cat ../setup/docker/extra-dockerfile-lines.txt >> Dockerfile
 cp ../setup/diff/records-view-file.patch .

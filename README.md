@@ -90,7 +90,7 @@ TODO results of queries
 
 This section describes, what files are modified compared to a standard InvenioRDM installation.
 
-First of all, the `setup-invenio.sh` script acts as a wrapper around the standard `invenio-cli init` way of installing InvenioRDM (see [here](https://inveniordm.docs.cern.ch/install/)). It automates installation as far as possible (some user interaction is required though) and provides an entrypoint for all necessary modifications.
+First of all, the `setup-invenio.sh` script acts as a wrapper around the standard `invenio-cli init` way of installing InvenioRDM (see [here](https://inveniordm.docs.cern.ch/install/)). It automates installation as far as possible (some user interaction is required though) and provides an entrypoint for all necessary modifications. Because a couple of version error occurred during development, the setup script also fixes the versions of some dependencies.
 
 Through the `modify-docker-compose.py` script in `invenio-rdm/setup/docker`, the `docker-compose.yml` file created during InvenioRDM installation is adapted. Along with changes to make InvenioRDM even work (set number of proxies, add allowed hosts), which are not related to provenance data, the environment variables holding the ProvStore credentials are set here.
 
