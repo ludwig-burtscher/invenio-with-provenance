@@ -12,7 +12,7 @@ The architecture of our project basically consists of three key components:
 
 We use a standard installation of InvenioRDM, but add a hook to it that is always triggered when an event occurs on a record. Currently, creation, update/modification and deletion of records are supported in addition to events when a record is read/displayed or appears in a search result.
 
-The hook calls a script (provstore-push.py) that receives event data as arguments and generates provenance data according to the [W3C PROV standard](https://www.w3.org/TR/prov-overview/). The Provenance data structure for all events is described in [Provenance data](##-provenance-data).  
+The hook calls a script (provstore-push.py) that receives event data as arguments and generates provenance data according to the [W3C PROV standard](https://www.w3.org/TR/prov-overview/). The Provenance data structure for all events is described in [Provenance data](#provenance-data).  
 These data are then uploaded to the ProvStore and for storage as individual provenance documents. Each event results in a separate document.
 
 When provenance data should be analyzed, they have to be exported from the ProvStore. Since the [API of ProvStore](https://openprovenance.org/store/help/api/#documents-list) does not provide means to download a single file containing all relevant provenance documents, we developed a script (export.py) that fetches the documents individually and generates a single RDF/Turtle file.  
