@@ -74,9 +74,14 @@ Generated events will change the state of InvenioRDM, so do not use this script 
 
 The directory `provstore_export` contains the Python script `export.py` that downloads a single RDF/Turtle file with all captured provenance in ProvStore (with valid credentials). Because all data in the ProvStore account is retrieved, a ProvStore account is necessary, where only data from InvenioRDM is stored.
 
-### Analysis in GraphDB
+### Analysis in graph query engines
 
-TODO warum turtle? was kann man nacher rauslesen?
+The provenance data is exported as RDF/Turtle. This format allows for easy analysis of the recorded data with SparQL queries.
+These queries can be executed with common libraries such as RDFLib or Eclipse RDF4J or complete graphical applications such as Ontotext GraphDB.
+
+These engines allow to define a pattern in SparQL that is matched against the data graph outlined [Provenance data](#provenance-data).
+The PROV data model allows to write a variety of useful queries. 
+In the next section we will present a few possible questions that can be answered with this data model.
 
 
 ## Results of simulation test data
