@@ -31,23 +31,23 @@ The following sections show diagrams of the provenance data model for each event
 
 ### Create
 
-![Create PROV data model](file://documentation/create.png)
+![Create PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/create.png)
 
 ### Read / Displayed
 
-![Read PROV data model](file://documentation/read.png)
+![Read PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/read.png)
 
 ### Update
 
-![Update PROV data model](file://documentation/update.png)
+![Update PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/update.png)
 
 ### Delete
 
-![Delete PROV data model](file://documentation/delete.png)
+![Delete PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/delete.png)
 
 ### List / Appears in search result
 
-![List PROV data model](file://documentation/list.png)
+![List PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/list.png)
 In this example, three records appeared as results to the search.
 
 
