@@ -3,7 +3,7 @@
 source ./invenio-api.sh
 check_deps
 
-set_invenio_host "https://10.0.0.160"
+set_invenio_host "https://127.0.0.1:4443"
 set_curl_opts "--insecure"
 
 create_update_get_record () {
