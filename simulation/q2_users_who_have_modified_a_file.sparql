@@ -1,0 +1,33 @@
+# Give me all people who modified the file
+
+# The following query returns all agents that have possibly changed the state of a record.
+# The actions that would change a record are creation, updating and deletion.
+
+# Replace the placeholder ``recordid-here'' with an actual record id to get the result for this id.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX action: <http://example.org/actions/>
+PREFIX invenio: <http://example.org/invenio/>
+SELECT ?email WHERE { 
+	?user a prov:Agent .
+    ?action a prov:Activity .
+    ?record a prov:Entity .
+    { 
+        ?action prov:used ?record .
+        ?action invenio:activityType "delete" . 
+    } UNION {
+        ?record prov:wasGeneratedBy ?action .
+        ?action invenio:activityType "create" . 
+    } UNION {
+        ?action prov:used ?record .
+        ?action invenio:activityType "update" . 
+    } .
+    ?action prov:wasAssociatedWith ?user .
+    ?record invenio:recordId "<<recordid-here>>" .
+    ?user invenio:email ?email .
+}
+GROUP BY ?email
+
+# Results for record id "7d6qs-z2s60":
+# 
+# "test19076@test.it"

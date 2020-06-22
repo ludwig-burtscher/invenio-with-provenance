@@ -1,0 +1,25 @@
+# Had a user any access to a file?
+
+# The following query returns true if a user identified 
+# by an email address has seen or touched a specific 
+# record identified by its id.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX invenio: <http://example.org/invenio/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+ASK { 
+	?record a prov:Entity .
+    {
+    	?action prov:used ?record .
+    } UNION {
+        ?record prov:wasGeneratedBy ?action .
+    }
+    ?action a prov:Activity .
+    ?action prov:wasAssociatedWith ?user .
+    ?record invenio:recordId "<<record-id-here>>" .
+	?user invenio:email "<<email-here>>" .
+}
+
+# Results for record id "7d6qs-z2s60" and email "admin18774@test.it":
+# 
+# YES

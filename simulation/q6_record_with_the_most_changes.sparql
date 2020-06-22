@@ -1,0 +1,23 @@
+# Which record has been changed the most?
+
+# The following query returns the record that has changed the most.
+# This query might be interesting as it might indicate misuse of 
+# the repository system.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX invenio: <http://example.org/invenio/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?record (count(?action) as ?count) WHERE { 
+	?record a prov:Entity .
+    ?action prov:used ?record .
+    ?action a prov:Activity .
+	?action invenio:activityType "update"^^xsd:string .
+} 
+GROUP BY ?record
+ORDER BY DESC (?count)
+LIMIT 1
+
+# Results:
+# 
+# record                        count
+# invenio:record_1ehz2-maq45_0  "1"

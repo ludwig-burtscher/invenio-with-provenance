@@ -1,0 +1,46 @@
+# Give me all files seen be the given user on the specific day
+
+# The following query returns all records that a user has seen 
+# on a specific day.
+# ``Seen'' is defined as having received the record data. This 
+# can of course happen when reading records, but also when 
+# creating or updating a record as it is returned after such 
+# actions.
+
+# As the list action will only return the identifier of a record 
+# it is not considered here.
+
+# The date has to be specified one value at a time in the filter clauses.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX invenio: <http://example.org/invenio/>
+SELECT ?recordid WHERE { 
+	?record a prov:Entity .
+    ?action a prov:Activity .
+    ?action prov:startedAtTime ?time .
+	{ 
+        ?action prov:used ?record .
+        ?action invenio:activityType "read" . 
+    } UNION {
+        ?record prov:wasGeneratedBy ?action .
+        ?action invenio:activityType "create" . 
+    } UNION {
+        ?action prov:used ?record .
+        ?action invenio:activityType "update" . 
+    } .
+    ?action prov:wasAssociatedWith ?user .
+    ?user invenio:email "<<user-email>>" .
+    ?record invenio:recordId ?recordid .
+    
+    FILTER (DAY(?time) = <<day>>) .
+    FILTER (MONTH(?time) = <<month>>) .
+    FILTER (YEAR(?time) = <<year>>) .
+} GROUP BY ?recordid
+
+# Results for user "test19076@test.it" and date 2020-06-21:
+# 
+# "p24z6-xcd56"
+# "w321m-36834"
+# "psj8a-fst56"
+# "sbb07-h5k91"
+# "7d6qs-z2s60"

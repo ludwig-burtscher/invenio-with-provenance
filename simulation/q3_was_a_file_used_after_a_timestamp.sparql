@@ -1,0 +1,33 @@
+# Was the file used after a specific timestamp?
+
+# The following query returns a boolean that tells us if the 
+# file was used by any action (reading or writing) after a 
+# specific point in time.
+
+# Replace the placeholder ``recordid-here'' with an actual 
+# record id to get the result for this id.
+# Replace the placeholder ``time-here'' with a timestamp 
+# with the format ``yyyy-MM-ddTHH:mm:ss.SSSZZZZ'' to specify 
+# which threshold timestamp should be used.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX action: <http://example.org/actions/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX invenio: <http://example.org/invenio/>
+ASK { 
+	?record a prov:Entity .
+    ?action a prov:Activity .
+    ?action prov:startedAtTime ?time .
+	{ 
+        ?action prov:used ?record .
+    } UNION {
+        ?record prov:wasGeneratedBy ?action . 
+    } .
+    ?record invenio:recordId "<<recordid-here>>" .
+    FILTER(?time > "<<time-here>>"^^xsd:dateTime) .
+    # Format: 2020-06-21T20:39:04.659+01:00
+}
+
+# Result for record id "7d6qs-z2s60" and timestamp "2020-06-21T20:39:04.659+01:00":
+# 
+# YES

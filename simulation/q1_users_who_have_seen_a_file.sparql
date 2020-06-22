@@ -1,0 +1,33 @@
+# Give me a list of users who have seen the file
+
+# We are not using the activities where record data not is returned.
+# This means that we only need to consider create, update and read operations 
+# as their invenio endpoints in the application returns the full record object.
+
+# Replace the placeholder ``recordid-here'' with an actual record id to get the result for this id.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX action: <http://example.org/actions/>
+PREFIX invenio: <http://example.org/invenio/>
+SELECT ?email WHERE { 
+	?user a prov:Agent .
+    ?action a prov:Activity .
+    { 
+        ?action prov:used ?record .
+        ?action invenio:activityType "read" . 
+    } UNION {
+        ?record prov:wasGeneratedBy ?action .
+        ?action invenio:activityType "create" . 
+    } UNION {
+        ?action prov:used ?record .
+        ?action invenio:activityType "update" . 
+    } .
+    ?action prov:wasAssociatedWith ?user .
+    ?record invenio:recordId "<<recordid-here>>" .
+    ?user invenio:email ?email .
+} GROUP BY ?email
+
+# Results for record id "7d6qs-z2s60":
+# 
+# "test19076@test.it"
+# "admin18774@test.it"

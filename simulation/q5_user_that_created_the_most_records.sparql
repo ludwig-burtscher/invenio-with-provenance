@@ -1,0 +1,28 @@
+# Which user has created the most records?
+
+# The following query checks which user has created the most records.
+# As InvenioRDM also possibly allows anonymous users to create records 
+# they are explicitly taken out of the results as the records cannot 
+# be attributed to a single anonymous user.
+
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX invenio: <http://example.org/invenio/>
+SELECT ?email (count(?record) as ?count) WHERE { 
+	?record a prov:Entity .
+    ?record prov:wasGeneratedBy ?action .
+    ?action a prov:Activity .
+	?action invenio:activityType "create" .
+    ?action prov:wasAssociatedWith ?user .
+    ?user a prov:Agent .
+    ?user invenio:email ?email .
+    FILTER (?email != "anonymous") .
+} 
+GROUP BY ?email
+ORDER BY DESC (?count)
+LIMIT 1
+
+# Result:
+#
+# email                 count
+# "test19076@test.it"   "5"
