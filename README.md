@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/260191196.svg)](https://zenodo.org/badge/latestdoi/260191196)
+
 # invenio-with-provenance proof-of-concept
 
 This project is a proof-of-concept of how the Research Data Management Repository [InvenioRDM](https://inveniordm.docs.cern.ch/) can be extended to provide provenance data for records.  
