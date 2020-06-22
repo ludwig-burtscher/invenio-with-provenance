@@ -97,6 +97,11 @@ Through the `modify-docker-compose.py` script in `invenio-rdm/setup/docker`, the
 Also, the Dockerfile created during InvenioRDM installation has to be modified. The content of the file `invenio-rdm/setup/docker/extra-dockerfile-lines.txt` is appended to the Dockerfile. With these changes, the `provstore-push.py` script is copied to the docker image during the build process and a needed Python package is installed. This script handles generation of provenance data from events and uploads them to the ProvStore.
 
 A trigger to call this script is still missing. This trigger is added by patching the file `/opt/invenio/src/src/invenio-records-rest/invenio_records_rest/views.py` inside the docker image with the diff file provided at `invenio-rdm/setup/diff/records-view-file.patch`. It modifies original InvenioRDM code so that the `provstore-push.py` script is called with appropriate parameters whenever an event involving a record occurs.
+
+
+## Disclaimer
+
+This project was implemented for the Data Stewardship lecture in summer term 2020. It is a proof of concept and should not be used in production without adaptions.
  
 
 
