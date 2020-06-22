@@ -13,10 +13,10 @@ The architecture of our project basically consists of three key components:
 We use a standard installation of InvenioRDM, but add a hook to it that is always triggered when an event occurs on a record. Currently, creation, update/modification and deletion of records are supported in addition to events when a record is read/displayed or appears in a search result.
 
 The hook calls a script (provstore-push.py) that receives event data as arguments and generates provenance data according to the [W3C PROV standard](https://www.w3.org/TR/prov-overview/). The Provenance data structure for all events is described in [Provenance data](#provenance-data).  
-These data are then uploaded to the ProvStore and for storage as individual provenance documents. Each event results in a separate document.
+These audit fragments are then uploaded to the ProvStore and for storage as individual provenance documents. Each event results in a separate document.
 
 When provenance data should be analyzed, they have to be exported from the ProvStore. Since the [API of ProvStore](https://openprovenance.org/store/help/api/#documents-list) does not provide means to download a single file containing all relevant provenance documents, we developed a script (export.py) that fetches the documents individually and generates a single RDF/Turtle file.  
-This file can then be imported into GraphDB and queried.
+This file can then be used in further tools such as GraphDB to answer further questions.
 
 
 ## Provenance data
@@ -62,8 +62,8 @@ Ports 80 and 443 of the VM are forwarded to ports 8080 and 4443 on the local mac
 ### Installing modified InvenioRDM
 
 Once the VM is up an running, the `invenio-rdm` directory has to be copied to the VM. Since the directory with the Vagrantfile is mounted at `/vagrant` in the VM, the `invenio-rdm` directory can be copied to the VM's file system with `cp -r /vagrant/invenio-rdm <<destination>>`.  
-To install the modified InvenioRDM, the `setup-invenio.sh` script in the copied directory has to be called. If necessary, the TLS certificate/key for the InvenioRDM UI in the `cert` directory can be replaced before. The setup script asks some self-explaining questions that have to be answered interactively. For the PROVSTORE username and API key, a free ProvStore is needed. It can be registered [here](https://openprovenance.org/store/account/signup/).  
-The installation then continues without further user interaction, but can take a lot of time. Once the script has finished, InvenioRDM is installed successfully.
+To install the modified InvenioRDM, the `setup-invenio.sh` script in the copied directory has to be called. If necessary, the TLS certificate/key for the InvenioRDM UI in the `cert` directory can be replaced before starting the installation process. The setup script asks some self-explaining questions that have to be answered interactively. For the PROVSTORE username and API key, a free ProvStore is needed. It can be registered [here](https://openprovenance.org/store/account/signup/).  
+The installation then continues without further user interaction, but can take a lot of time. Once the script has finished, InvenioRDM is installed and running successfully.
 
 ### Simulating events to generate provenance
 
@@ -72,18 +72,29 @@ Generated events will change the state of InvenioRDM, so do not use this script 
 
 ### Export of provenance data from ProvStore
 
-The directory `provstore_export` contains the Python script `export.py` that downloads a single RDF/Turtle file with all captured provenance in ProvStore (with valid credentials). Because all data in the ProvStore account is retrieved, a ProvStore account is neccessary, where only data from InvenioRDM is stored.
+The directory `provstore_export` contains the Python script `export.py` that downloads a single RDF/Turtle file with all captured provenance in ProvStore (with valid credentials). Because all data in the ProvStore account is retrieved, a ProvStore account is necessary, where only data from InvenioRDM is stored.
 
 ### Analysis in GraphDB
 
-TODO
+TODO warum turtle? was kann man nacher rauslesen?
 
 
 ## Results of simulation test data
 
 The directory `simulation/results` contains the RDF/Turtle file with provenance data captured from executing the `test-scenario.sh` script twice. It was created like described above.
+The `simulation` directory also contains possible queries that could be executed on the retrieved data.
 
-TODO results of queries
+Each query is ran on the included provenance data and the output is stored together with a short description together with the query.
+To perform the query any SparQL query engine could be used. In our case we used GraphDB to host and query the data.
+
+Included queries are:
+* 
+* 
+* 
+* 
+* 
+* 
+* 
 
 
 ## Modifications of InvenioRDM
