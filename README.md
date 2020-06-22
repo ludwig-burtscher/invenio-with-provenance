@@ -90,7 +90,7 @@ TODO results of queries
 
 This section describes, what files are modified compared to a standard InvenioRDM installation.
 
-First of all, the `setup-invenio.sh` script acts as a wrapper around the standard `invenio-cli init` way of installing InvenioRDM (see [here](https://inveniordm.docs.cern.ch/install/)). It automates installation as far as possible (some user interaction is required though) and provides an entrypoint for all necessary modifications. Because a couple of version error occurred during development, the setup script also fixes the versions of some dependencies.
+First of all, the `setup-invenio.sh` script acts as a wrapper around the standard `invenio-cli init` way of installing InvenioRDM (see [here](https://inveniordm.docs.cern.ch/install/)). It automates installation as far as possible (some user interaction is required though) and provides an entrypoint for all necessary modifications. Because a couple of version errors occurred during development, the setup script also fixes the versions of some dependencies.
 
 Through the `modify-docker-compose.py` script in `invenio-rdm/setup/docker`, the `docker-compose.yml` file created during InvenioRDM installation is adapted. Along with changes to make InvenioRDM even work (set number of proxies, add allowed hosts), which are not related to provenance data, the environment variables holding the ProvStore credentials are set here.
 
@@ -99,9 +99,15 @@ Also, the Dockerfile created during InvenioRDM installation has to be modified. 
 A trigger to call this script is still missing. This trigger is added by patching the file `/opt/invenio/src/src/invenio-records-rest/invenio_records_rest/views.py` inside the docker image with the diff file provided at `invenio-rdm/setup/diff/records-view-file.patch`. It modifies original InvenioRDM code so that the `provstore-push.py` script is called with appropriate parameters whenever an event involving a record occurs.
 
 
+## Contributers
+
+* Roland Wallner <a itemprop="sameAs" content="https://orcid.org/0000-0002-2932-9892" href="https://orcid.org/0000-0002-2932-9892" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">https://orcid.org/0000-0002-2932-9892</a>
+* Ludwig Burtscher <a itemprop="sameAs" content="https://orcid.org/0000-0001-5453-8074" href="https://orcid.org/0000-0001-5453-8074" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">https://orcid.org/0000-0001-5453-8074</a>
+
+
 ## Disclaimer
 
-This project was implemented for the Data Stewardship lecture in summer term 2020. It is a proof of concept and should not be used in production without adaptions.
+This project was implemented for the Data Stewardship lecture in summer term 2020 at TU Wien. It is a proof of concept and should not be used in production without adaptions. Only requests to the InvenioRDM REST API are guaranteed to create provenance data, since the user interface is not fully functional yet.
  
 
 
