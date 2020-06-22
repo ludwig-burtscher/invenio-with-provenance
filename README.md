@@ -48,7 +48,7 @@ The following sections show diagrams of the provenance data model for each event
 ### List / Appears in search result
 
 ![List PROV data model](https://raw.githubusercontent.com/ludwig-burtscher/invenio-with-provenance/master/documentation/list.png)
-In this example, three records appeared as results to the search.
+In this example, two records appeared as results to a search.
 
 
 ## How to reproduce
